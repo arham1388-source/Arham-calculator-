@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  background: #17172e;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding: 20px;
+}
+.box {
+  max-width: 320px;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 20px;
+  background: #29294a;
+}
+input {
+  width: 95%;
+  height: 60px;
+  font-size: 28px;
+  margin-bottom: 12px;
+  background: #111126;
+  color: white;
+  text-align: right;
+}
+button {
+  height: 55px;
+  font-size: 22px;
+  background: #7545cf;
+  color: white;
+  border: 0;
+  border-radius: 10px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>My Calculator</h2>
+<input id="d" value="0" readonly>
+<div class="grid" id="buttons"></div>
+</div>
+<script>
+let d=document.getElementById('d');
+let old=null, sign=null, fresh=false;
+function press(x) {
+ if(x==='AC'){d.value='0';old=null;sign=null;fresh=false;return;}
+ if(x==='='){
+  if(sign===null)return;
+  let b=Number(d.value),r;
+  if(sign==='+')r=old+b;
+  if(sign==='-')r=old-b;
+  if(sign==='×')r=old*b;
+  if(sign==='÷')r=b===0?NaN:old/b;
+  d.value=Number.isFinite(r)?String(r):'Error';
+  sign=null;old=null;fresh=true;return;
+ }
+ if(['+','-','×','÷'].includes(x)){
+  old=Number(d.value);sign=x;fresh=true;return;
+ }
+ if(x==='%'){d.value=String(Number(d.value)/100);return;}
+ if(x==='⌫'){d.value=d.value.length>1?d.value.slice(0,-1):'0';return;}
+ if(x==='.'){
+  if(fresh){d.value='0';fresh=false;}
+  if(!d.value.includes('.'))d.value+='.';
+  return;
+ }
+ if(fresh||d.value==='Error'){d.value=x;fresh=false;}
+ else d.value=d.value==='0'?x:d.value+x;
+}
+'AC ⌫ % ÷ 7 8 9 × 4 5 6 - 1 2 3 + 0 . ='.split(' ').forEach(x=>{
+ let b=document.createElement('button');
+ b.textContent=x;b.onclick=()=>press(x);
+ document.getElementById('buttons').appendChild(b);
+});
+</script>
+</body>
+</html>
